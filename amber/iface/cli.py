@@ -54,7 +54,7 @@ def seed(db: Path = typer.Option(None)) -> None:
     console.print(f"已写入 {len(data['tasks'])} 个任务、{len(data['deps'])} 条依赖、{len(data['snapshots'])} 周快照")
 
 
-@app.command()
+@app.command("board")
 def board_cmd(day: str = typer.Option(""), db: Path = typer.Option(None)) -> None:
     """看板三列与扣分。"""
     s = _settings(db)
@@ -76,10 +76,9 @@ def board_cmd(day: str = typer.Option(""), db: Path = typer.Option(None)) -> Non
         console.print(f"  [yellow]{f.rule_id}[/] -{f.penalty} {f.message}")
 
 
-app.command(name="board")(board_cmd)
 
 
-@app.command()
+@app.command("explain")
 def explain_cmd(day: str = typer.Option(""), db: Path = typer.Option(None)) -> None:
     """模型说明（无 key 走本地事实）。"""
     s = _settings(db)
@@ -89,7 +88,6 @@ def explain_cmd(day: str = typer.Option(""), db: Path = typer.Option(None)) -> N
     console.print(f"红 {len(b.red)} 黄 {len(b.yellow)} 绿 {len(b.green)}，扣分 {b.penalty_total}")
 
 
-app.command(name="explain")(explain_cmd)
 
 
 @app.command()
