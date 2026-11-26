@@ -1,0 +1,21 @@
+{
+  "tasks": [
+    {"title": "支付重构", "points": 21, "done_points": 13, "due": "2026-12-10", "owner": "阿泽"},
+    {"title": "对账中心", "points": 13, "done_points": 5, "due": "2026-12-04", "owner": "小林"},
+    {"title": "权限模型", "points": 8, "done_points": 8, "due": "2026-11-20", "owner": "文文"},
+    {"title": "导出服务", "points": 5, "done_points": 1, "due": "2026-11-24", "owner": "大刘"},
+    {"title": "登录改造", "points": 3, "done_points": 3, "due": "2026-11-18", "owner": "小周"},
+    {"title": "监控告警", "points": 8, "done_points": 2, "due": "2026-12-18", "owner": "阿满"}
+  ],
+  "deps": [
+    {"task": "支付重构", "blocked_by": "对账中心"},
+    {"task": "对账中心", "blocked_by": "权限模型"},
+    {"task": "导出服务", "blocked_by": "权限模型"}
+  ],
+  "snapshots": [
+    {"week_end": "2026-11-01", "completed": 9},
+    {"week_end": "2026-11-08", "completed": 7},
+    {"week_end": "2026-11-15", "completed": 8},
+    {"week_end": "2026-11-22", "completed": 6}
+  ]
+}
