@@ -15,6 +15,7 @@ from ..adapters.notify import WebhookNotifier
 from ..adapters.store import SqliteStore
 from ..app.jobs import enqueue_daily, run_due
 from ..app.run import PROMPT, board, explain
+from ..app.weekly import build_weekly
 from ..config import Settings
 from ..config import settings as default_settings
 from ..doctor import main as doctor_main
@@ -76,6 +77,22 @@ def board_cmd(day: str = typer.Option(""), db: Path = typer.Option(None)) -> Non
     console.print(table)
     for f in b.findings:
         console.print(f"  [yellow]{f.rule_id}[/] -{f.penalty} {f.message}")
+
+
+@app.command()
+def weekly(
+    day: str = typer.Option("", help="周一日期 YYYY-MM-DD，默认今天"),
+    out: Path = typer.Option(None, help="输出 Markdown；不填打印"),
+) -> None:
+    """5 个项目 → 3 条风险 + 建议动作，周一可发群。"""
+    d = date.fromisoformat(day) if day else date.today()
+    body = build_weekly(d)
+    if out:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(body, encoding="utf-8")
+        console.print(f"[green]已写出[/] {out}（{len(body.splitlines())} 行）")
+    else:
+        console.print(body)
 
 
 @app.command("explain")

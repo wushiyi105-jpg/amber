@@ -1,0 +1,80 @@
+{
+  "grading": {
+    "red": "逾期 ≥3 天，或按当前吞吐预测晚于承诺日",
+    "yellow": "预测能赶上，但两周负荷 >100%，或上游有风险",
+    "green": "已完成或按当前吞吐能按期完成",
+    "sample": "快照不足 2 周时不做预测，只报负荷"
+  },
+  "dep_types": [
+    {"type": "硬依赖", "rule": "上游没完成，下游不能验收"},
+    {"type": "软依赖", "rule": "可并行，但联调要用上游接口"},
+    {"type": "外部依赖", "rule": "等供应商或第三方，延期不受团队控制"}
+  ],
+  "projects": [
+    {
+      "name": "支付平台",
+      "capacity_hours": 320,
+      "tasks": [
+        {"title": "支付重构", "points": 21, "done_points": 13, "due": "2026-12-10", "owner": "阿泽"},
+        {"title": "对账中心", "points": 13, "done_points": 5, "due": "2026-12-04", "owner": "小林"},
+        {"title": "权限模型", "points": 8, "done_points": 8, "due": "2026-11-20", "owner": "文文"},
+        {"title": "导出服务", "points": 5, "done_points": 1, "due": "2026-11-24", "owner": "大刘"},
+        {"title": "监控告警", "points": 8, "done_points": 2, "due": "2026-12-18", "owner": "阿满"}
+      ],
+      "deps": [{"task": "支付重构", "blocked_by": "对账中心", "type": "硬依赖"}, {"task": "导出服务", "blocked_by": "权限模型", "type": "硬依赖"}],
+      "snapshots": [9, 7, 8, 6]
+    },
+    {
+      "name": "会员体系",
+      "capacity_hours": 280,
+      "tasks": [
+        {"title": "会员等级", "points": 13, "done_points": 4, "due": "2026-12-08", "owner": "小夏"},
+        {"title": "积分商城", "points": 8, "done_points": 2, "due": "2026-11-28", "owner": "小夏"},
+        {"title": "权益发放", "points": 5, "done_points": 5, "due": "2026-11-21", "owner": "阿岚"},
+        {"title": "短信通道", "points": 3, "done_points": 1, "due": "2026-12-02", "owner": "老陈"},
+        {"title": "对账报表", "points": 8, "done_points": 3, "due": "2026-12-15", "owner": "小林"}
+      ],
+      "deps": [{"task": "会员等级", "blocked_by": "积分商城", "type": "软依赖"}, {"task": "权益发放", "blocked_by": "会员等级", "type": "硬依赖"}],
+      "snapshots": [8, 6, 7, 7]
+    },
+    {
+      "name": "数据中台",
+      "capacity_hours": 360,
+      "tasks": [
+        {"title": "指标平台", "points": 21, "done_points": 8, "due": "2026-12-12", "owner": "阿泽"},
+        {"title": "数据血缘", "points": 13, "done_points": 3, "due": "2026-12-05", "owner": "文文"},
+        {"title": "调度改造", "points": 8, "done_points": 6, "due": "2026-12-20", "owner": "阿满"},
+        {"title": "质量规则", "points": 5, "done_points": 2, "due": "2026-11-27", "owner": "小林"},
+        {"title": "元数据同步", "points": 3, "done_points": 0, "due": "2026-12-01", "owner": "大刘"}
+      ],
+      "deps": [{"task": "指标平台", "blocked_by": "数据血缘", "type": "硬依赖"}, {"task": "质量规则", "blocked_by": "调度改造", "type": "硬依赖"}],
+      "snapshots": [10, 9, 8, 9]
+    },
+    {
+      "name": "门店 POS",
+      "capacity_hours": 300,
+      "tasks": [
+        {"title": "收银重构", "points": 21, "done_points": 10, "due": "2026-12-15", "owner": "小周"},
+        {"title": "库存同步", "points": 13, "done_points": 4, "due": "2026-12-06", "owner": "小何"},
+        {"title": "离线模式", "points": 8, "done_points": 2, "due": "2026-11-30", "owner": "阿岚"},
+        {"title": "小票打印", "points": 5, "done_points": 4, "due": "2026-12-03", "owner": "老陈"},
+        {"title": "门店配置", "points": 3, "done_points": 3, "due": "2026-11-18", "owner": "文文"}
+      ],
+      "deps": [{"task": "收银重构", "blocked_by": "库存同步", "type": "硬依赖"}, {"task": "离线模式", "blocked_by": "收银重构", "type": "硬依赖"}],
+      "snapshots": [7, 8, 6, 7]
+    },
+    {
+      "name": "客服工单",
+      "capacity_hours": 240,
+      "tasks": [
+        {"title": "工单分配", "points": 13, "done_points": 5, "due": "2026-12-09", "owner": "阿满"},
+        {"title": "质检抽检", "points": 8, "done_points": 3, "due": "2026-12-02", "owner": "小夏"},
+        {"title": "客户回访", "points": 5, "done_points": 1, "due": "2026-11-26", "owner": "老陈"},
+        {"title": "知识库检索", "points": 8, "done_points": 2, "due": "2026-12-16", "owner": "阿泽"},
+        {"title": "满意度报表", "points": 3, "done_points": 1, "due": "2026-12-04", "owner": "小林"}
+      ],
+      "deps": [{"task": "满意度报表", "blocked_by": "客户回访", "type": "软依赖"}],
+      "snapshots": [5, 6, 6, 5]
+    }
+  ]
+}

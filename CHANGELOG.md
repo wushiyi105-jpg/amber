@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- 新增 5 个项目、25 个任务、4 周吞吐样本与 3 类依赖说明（`data/projects.json`）
+- 新增 `weekly` 周一风险周报：3 条风险 + 建议动作 + 5 项目负荷/吞吐，上游风险沿依赖传导
 - `0001_init` 改为显式 `op.create_table` / `op.create_index`，运行期走 `alembic upgrade`
 - `app/` 只依赖 `ports`，新增内存假实现用例
 - 开 ruff `E2`/`E3`；CI 增加 `docker build` 与 `/health` 探活
