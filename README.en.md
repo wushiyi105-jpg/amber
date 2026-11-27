@@ -52,7 +52,7 @@ It is a throughput average; with fewer than three snapshots it says “not enoug
 It raises an error and produces no board.
 
 **Was the Docker image verified?**
-Docker is not installed on the build machine, so `docker build .` was not run and the image is unverified; only the Dockerfile and ports were checked statically.
+The CI `docker` job runs `docker build .`, starts the container and polls `/health`; Docker is not installed locally, so it was not re-run on the build machine.
 
 ## Commands
 
