@@ -78,8 +78,6 @@ def board_cmd(day: str = typer.Option(""), db: Path = typer.Option(None)) -> Non
         console.print(f"  [yellow]{f.rule_id}[/] -{f.penalty} {f.message}")
 
 
-
-
 @app.command("explain")
 def explain_cmd(day: str = typer.Option(""), db: Path = typer.Option(None)) -> None:
     """模型说明（无 key 走本地事实）。"""
@@ -89,8 +87,6 @@ def explain_cmd(day: str = typer.Option(""), db: Path = typer.Option(None)) -> N
     b, text = explain(_store(s), s, d, llm)
     console.print(text)
     console.print(f"红 {len(b.red)} 黄 {len(b.yellow)} 绿 {len(b.green)}，扣分 {b.penalty_total}")
-
-
 
 
 @app.command()

@@ -51,6 +51,9 @@ It is a throughput average; with fewer than three snapshots it says “not enoug
 **What happens on a dependency cycle?**
 It raises an error and produces no board.
 
+**Was the Docker image verified?**
+Docker is not installed on the build machine, so `docker build .` was not run and the image is unverified; only the Dockerfile and ports were checked statically.
+
 ## Commands
 
 See the Chinese README (`README.md`) for the command table with flags; every command supports `--help`.
@@ -63,13 +66,13 @@ FastAPI + Uvicorn, Jinja2, pydantic / pydantic-settings, httpx, Typer + Rich, SQ
 
 ```mermaid
 graph LR
-  A[任务] --> M[吞吐预测]
-  B[依赖] --> M
-  C[4 周快照] --> M
-  M --> R[规则：样本不足 / 延期 / 负荷 / 逾期升级]
-  R --> P[模型写风险说明]
-  P --> G[数字守卫]
-  G --> O[红黄绿看板]
+  A[tasks] --> M[throughput forecast]
+  B[dependencies] --> M
+  C[4-week snapshots] --> M
+  M --> R[rules: insufficient samples / slip / load / overdue escalation]
+  R --> P[model writes risk note]
+  P --> G[number guard]
+  G --> O[red/amber/green board]
 ```
 
 ## Layout
