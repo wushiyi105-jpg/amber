@@ -9,8 +9,9 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.templating import Jinja2Templates
 
+from ..adapters.llm import build_llm
 from ..adapters.store import SqliteStore
-from ..app.run import board, explain
+from ..app.run import PROMPT, board, explain
 from ..config import Settings
 
 TEMPLATES = Jinja2Templates(directory=str(Path(__file__).resolve().parents[2] / "templates"))
@@ -19,6 +20,7 @@ TEMPLATES = Jinja2Templates(directory=str(Path(__file__).resolve().parents[2] / 
 def create_app(settings: Settings, store: SqliteStore | None = None) -> FastAPI:
     app = FastAPI(title="Amber", version="1.0.0")
     store = store or SqliteStore(settings.db_path)
+    llm = build_llm(settings.llm_base_url, settings.llm_api_key, settings.llm_model, PROMPT) if settings.llm_enabled else None
 
     @app.get("/", response_class=HTMLResponse)
     def index(request: Request) -> HTMLResponse:
@@ -35,7 +37,7 @@ def create_app(settings: Settings, store: SqliteStore | None = None) -> FastAPI:
 
     @app.get("/explain.txt", response_class=PlainTextResponse)
     def explain_text() -> PlainTextResponse:
-        _, text = explain(store, settings)
+        _, text = explain(store, settings, llm=llm)
         return PlainTextResponse(text, media_type="text/plain; charset=utf-8")
 
     @app.get("/health")

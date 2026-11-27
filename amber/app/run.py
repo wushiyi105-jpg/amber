@@ -4,23 +4,21 @@ from __future__ import annotations
 
 import re
 from datetime import date
+from pathlib import Path
 
-from ..adapters.llm import build_llm
-from ..adapters.store import SqliteStore
 from ..config import Settings
 from ..domain.engine import build
 from ..domain.models import Board, Finding
+from ..ports import LLMPort, StorePort
 
-PROMPT = """你在解释项目风险。只能引用输入里出现的日期与点数。
-输出两段：为什么黄/红（不超过 3 句）；砍什么或加谁（2 条以内）。
-不要预测输入里没有的日期，不要编人名。"""
+PROMPT = (Path(__file__).resolve().parents[2] / "prompts" / "explain.md").read_text(encoding="utf-8")
 
 DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
 NUM = re.compile(r"\d+(?:\.\d+)?")
 PENALTY = 8
 
 
-def board(store: SqliteStore, settings: Settings, today: date | None = None) -> Board:
+def board(store: StorePort, settings: Settings, today: date | None = None) -> Board:
     return build(
         store.list_tasks(), store.list_deps(), store.list_snapshots(),
         today or date.today(), settings.capacity_hours,
@@ -62,11 +60,12 @@ def guard(text: str, allowed: set[str]) -> tuple[str, list[Finding]]:
     return "\n".join(kept).strip(), findings
 
 
-def explain(store: SqliteStore, settings: Settings, today: date | None = None) -> tuple[Board, str]:
+def explain(
+    store: StorePort, settings: Settings, today: date | None = None, llm: LLMPort | None = None
+) -> tuple[Board, str]:
     b = board(store, settings, today)
-    if not settings.llm_enabled:
+    if llm is None:
         return b, facts(b)
-    llm = build_llm(settings.llm_base_url, settings.llm_api_key, settings.llm_model, PROMPT)
     try:
         raw = llm.write(PROMPT, facts(b))
     except Exception:  # noqa: BLE001

@@ -10,9 +10,11 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
+from ..adapters.llm import build_llm
+from ..adapters.notify import WebhookNotifier
 from ..adapters.store import SqliteStore
 from ..app.jobs import enqueue_daily, run_due
-from ..app.run import board, explain
+from ..app.run import PROMPT, board, explain
 from ..config import Settings
 from ..config import settings as default_settings
 from ..doctor import main as doctor_main
@@ -83,7 +85,8 @@ def explain_cmd(day: str = typer.Option(""), db: Path = typer.Option(None)) -> N
     """模型说明（无 key 走本地事实）。"""
     s = _settings(db)
     d = date.fromisoformat(day) if day else date.today()
-    b, text = explain(_store(s), s, d)
+    llm = build_llm(s.llm_base_url, s.llm_api_key, s.llm_model, PROMPT) if s.llm_enabled else None
+    b, text = explain(_store(s), s, d, llm)
     console.print(text)
     console.print(f"红 {len(b.red)} 黄 {len(b.yellow)} 绿 {len(b.green)}，扣分 {b.penalty_total}")
 
@@ -99,7 +102,7 @@ def jobs(
     d = date.fromisoformat(day) if day else date.today()
     store = _store(s)
     if run:
-        console.print(f"发出 {run_due(store, s, d)} 条")
+        console.print(f"发出 {run_due(store, s, d, WebhookNotifier(s.webhook_url))} 条")
         return
     console.print("已入队" if enqueue_daily(store, d) else "今天已排过")
 
