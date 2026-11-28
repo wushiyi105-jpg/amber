@@ -1,6 +1,6 @@
 {% from "_macros.html" import shell, head, stats, card, tag, empty, note %}
-{% call shell("Amber", "项目风险", true) %}
-{{ head("项目风险看板", today ~ " · 只看需要动手的事") }}
+{% call shell("Amber", "项目作战地图", true) %}
+{{ head("本周先处理这三件", today ~ " · 只看会挡住里程碑的事") }}
 
 {% if board %}
 {{ stats([
