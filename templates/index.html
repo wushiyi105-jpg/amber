@@ -1,50 +1,52 @@
-<!doctype html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<title>Amber · 项目风险</title>
-<style>
-  :root{--bg:#0d1117;--panel:#161b22;--line:#26303d;--ink:#e6edf3;--dim:#8b949e}
-  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,"PingFang SC",sans-serif}
-  .wrap{max-width:960px;margin:0 auto;padding:40px 20px 80px}
-  h1{font-size:22px;margin:0 0 4px}
-  .sub{color:var(--dim);font-size:13px;margin-bottom:22px}
-  .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-  .col{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;min-height:240px}
-  .col h2{font-size:14px;margin:0 0 10px}
-  .red h2{color:#f85149}.yellow h2{color:#d29922}.green h2{color:#3fb950}
-  .card{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:14px}
-  .why{color:var(--dim);font-size:12px}
-  .finding{color:#f0883e;font-size:13px;margin-top:4px}
-  a{color:#4f9cf9;text-decoration:none;margin-right:14px}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <h1>Amber</h1>
-  <div class="sub">{{ today }} · 周吞吐均值 {{ board.avg_points if board else '—' }} · 扣分 {{ board.penalty_total if board else 0 }}</div>
+{% from "_macros.html" import shell, head, stats, card, tag, empty, note %}
+{% call shell("Amber", "项目风险", true) %}
+{{ head("项目风险看板", today ~ " · 只看需要动手的事") }}
 
-  {% if error %}<div class="finding">{{ error }}</div>{% endif %}
+{% if board %}
+{{ stats([
+  ("红 · 必须处理", board.red|length, "项"),
+  ("黄 · 盯着", board.yellow|length, "项"),
+  ("绿 · 完成", board.green|length, "项"),
+  ("周吞吐均值", board.avg_points, "点")
+]) }}
+{% endif %}
 
-  {% if board %}
-  <div class="cols">
-    <div class="col red"><h2>红 · 必须处理</h2>
-      {% for r in board.red %}<div class="card">{{ r.title }}<div class="why">{{ r.reason }}</div></div>{% endfor %}
-    </div>
-    <div class="col yellow"><h2>黄 · 盯着</h2>
-      {% for r in board.yellow %}<div class="card">{{ r.title }}<div class="why">{{ r.reason }}</div></div>{% endfor %}
-    </div>
-    <div class="col green"><h2>绿 · 完成</h2>
-      {% for r in board.green %}<div class="card">{{ r.title }}<div class="why">{{ r.reason }}</div></div>{% endfor %}
-    </div>
-  </div>
+{% if error %}{{ note(error, true) }}{% endif %}
 
-  {% for f in board.findings %}
-  <div class="finding">{{ f.rule_id }} -{{ f.penalty }} · {{ f.message }}</div>
-  {% endfor %}
-  {% endif %}
-
-  <p><a href="/explain.txt">风险说明</a><a href="/health">健康检查</a></p>
+{% if board %}
+<div class="board">
+  {% call card("红 · 必须处理", board.red|length ~ " 项") %}
+    {% for r in board.red %}
+    <div class="board-item"><div class="t">{{ r.title }}</div><div class="why">{{ r.reason }}</div></div>
+    {% else %}{{ empty("没有红色事项") }}{% endfor %}
+  {% endcall %}
+  {% call card("黄 · 盯着", board.yellow|length ~ " 项") %}
+    {% for r in board.yellow %}
+    <div class="board-item"><div class="t">{{ r.title }}</div><div class="why">{{ r.reason }}</div></div>
+    {% else %}{{ empty("没有黄色事项") }}{% endfor %}
+  {% endcall %}
+  {% call card("绿 · 完成", board.green|length ~ " 项") %}
+    {% for r in board.green %}
+    <div class="board-item"><div class="t">{{ r.title }}</div><div class="why">{{ r.reason }}</div></div>
+    {% else %}{{ empty("还没有完成项") }}{% endfor %}
+  {% endcall %}
 </div>
-</body>
-</html>
+
+{% if board.findings %}
+{% call card("扣分明细", board.penalty_total ~ " 分") %}
+  <div class="stack">
+  {% for f in board.findings %}
+    <div class="list-row"><span class="t">{{ f.message }}</span>{{ tag(f.rule_id ~ " · −" ~ f.penalty, "warn") }}</div>
+  {% endfor %}
+  </div>
+{% endcall %}
+{% endif %}
+{% else %}
+{{ empty("还没有项目数据", "先跑 seed 写入项目与任务，再回来看风险分布。") }}
+{% endif %}
+
+<div class="form-actions">
+  <a class="btn" href="/explain.txt">风险说明</a>
+  <a class="btn btn--ghost" href="/health">健康检查</a>
+</div>
+{% endcall %}
